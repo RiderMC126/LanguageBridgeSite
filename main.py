@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 import logging
+import asyncio
 import sys
 from config import *
 from utils import *
@@ -17,6 +18,12 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
+
+
+# Startup event для инициализации базы данных
+@app.on_event("startup")
+async def on_startup():
+    await init_db()  
 
 
 # Main Page
@@ -51,5 +58,4 @@ async def connectPage(request: Request):
 
 # Start application
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     uvicorn.run("main:app", host=HOST, port=PORT, reload=True)

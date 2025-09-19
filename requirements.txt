@@ -1,3 +1,6 @@
 fastapi==0.116.2
 uvicorn==0.35.0
 Jinja2==3.1.6
+logging==0.4.9.6
+asyncpg==0.30.0
+asyncio==4.0.0
