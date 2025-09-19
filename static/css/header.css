@@ -1,0 +1,94 @@
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #1e1e2f;
+  color: #fff;
+  border-bottom: 1px solid #444;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #4dd0e1;
+}
+
+.logo a {
+    text-decoration: none;
+    color: #4dd0e1;
+}
+
+.logo a:hover {
+    color: #4dd0e1;
+}
+
+.nav a {
+  margin-left: 30px;
+  font-size: 18px;
+  text-decoration: none;
+  color: #ddd;
+  transition: color 0.2s;
+  padding: 5px 10px; /* <-- добавляем одинаковый вертикальный padding */
+  border-radius: 6px; /* можно немного округлить */
+}
+
+
+.nav a:hover {
+  color: #4dd0e1;
+}
+
+.nav a.active {
+  position: relative;
+  color: var(--secondary);
+}
+
+.nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--secondary), var(--primary));
+  border-radius: 2px;
+}
+
+/* Градиентный текст */
+.gradient-text {
+  background: linear-gradient(to right, #06b6d4, #6366f1); /* cyan → indigo */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+}
+
+/* Красивая кнопка */
+.btn-gradient {
+  display: inline-block;
+  padding: 5px 20px;
+  border-radius: 8px;
+  background: linear-gradient(to right, rgba(6,182,212,0.2), rgba(99,102,241,0.2));
+  border: 1px solid rgba(99,102,241,0.3);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* Ховер-эффект */
+.btn-gradient:hover {
+  background: linear-gradient(to right, rgba(6,182,212,0.4), rgba(99,102,241,0.4));
+  box-shadow: 0 0 10px rgba(99,102,241,0.5);
+}
