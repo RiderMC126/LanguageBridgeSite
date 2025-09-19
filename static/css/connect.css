@@ -1,0 +1,106 @@
+/* Контейнер для входа/регистрации */
+.auth-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 20px;
+}
+
+/* Карточка формы */
+.auth-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(6,182,212,0.2);
+}
+
+/* Вкладки Login / Register */
+.auth-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+}
+.auth-tab {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+    color: #ccc;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    text-align: center;
+}
+.auth-tab.active {
+    background: linear-gradient(45deg, var(--secondary), var(--primary));
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(6,182,212,0.3);
+}
+
+/* Форма */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-form.hidden {
+    display: none;
+}
+
+.auth-form label {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 5px rgba(6,182,212,0.5);
+}
+
+/* Кнопка */
+.auth-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, var(--secondary), var(--primary));
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(6,182,212,0.4);
+}
+
+/* Пароль с кнопкой показать/скрыть */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1rem;
+}

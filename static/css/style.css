@@ -3,6 +3,9 @@
   --secondary: #06b6d4;  /* Cyan */
   --accent: #a855f7;     /* Purple */
   --dark-bg: #111827;    /* Тёмный фон */
+  --bg: #12131a;
+  --card-bg: rgba(255,255,255,0.05);
+  --text: #fff;
 }
 
 * {

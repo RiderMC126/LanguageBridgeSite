@@ -29,12 +29,22 @@ async def mainPage(request: Request):
     )
 
 # About Page
-@app.get("/about", response_class=HTTPException)
+@app.get("/about", response_class=HTMLResponse)
 async def aboutPage(request: Request):
     return templates.TemplateResponse(
         "about.html",
         {"request": request,
          "title": "About"
+         }
+    )
+
+# Connect Page
+@app.get("/connect", response_class=HTMLResponse)
+async def connectPage(request: Request):
+    return templates.TemplateResponse(
+        "connect.html",
+        {"request": request,
+         "title": "Connect"
          }
     )
 
