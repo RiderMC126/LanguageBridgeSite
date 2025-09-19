@@ -81,10 +81,26 @@
     padding: 12px 35px;
     font-size: 18px;
     transition: transform 0.3s ease;
+    display: inline-block;
+    margin: 0 auto;
 }
 
 .btn-large:hover {
     transform: scale(1.05);
+}
+
+/* Дополнительные стили для центрирования кнопки */
+#join-btn {
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+/* Убеждаемся, что родительский контейнер кнопки центрирует содержимое */
+.text-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @keyframes rotate {
