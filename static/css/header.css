@@ -37,16 +37,20 @@
     color: #4dd0e1;
 }
 
+.nav {
+  display: flex;
+  align-items: center;
+}
+
 .nav a {
   margin-left: 30px;
   font-size: 18px;
   text-decoration: none;
   color: #ddd;
   transition: color 0.2s;
-  padding: 5px 10px; /* <-- добавляем одинаковый вертикальный padding */
-  border-radius: 6px; /* можно немного округлить */
+  padding: 5px 10px;
+  border-radius: 6px;
 }
-
 
 .nav a:hover {
   color: #4dd0e1;
@@ -68,9 +72,44 @@
   border-radius: 2px;
 }
 
+/* Мобильное меню */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.mobile-nav {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1e1e2f;
+  border-top: 1px solid #444;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav a {
+  display: block;
+  margin: 15px 0;
+  padding: 10px;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.mobile-nav .btn-gradient {
+  margin-top: 20px;
+}
+
 /* Градиентный текст */
 .gradient-text {
-  background: linear-gradient(to right, #06b6d4, #6366f1); /* cyan → indigo */
+  background: linear-gradient(to right, #06b6d4, #6366f1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 600;
@@ -79,7 +118,7 @@
 /* Красивая кнопка */
 .btn-gradient {
   display: inline-block;
-  padding: 5px 20px;
+  padding: 8px 20px;
   border-radius: 8px;
   background: linear-gradient(to right, rgba(6,182,212,0.2), rgba(99,102,241,0.2));
   border: 1px solid rgba(99,102,241,0.3);
@@ -87,8 +126,48 @@
   transition: all 0.3s ease;
 }
 
-/* Ховер-эффект */
 .btn-gradient:hover {
   background: linear-gradient(to right, rgba(6,182,212,0.4), rgba(99,102,241,0.4));
   box-shadow: 0 0 10px rgba(99,102,241,0.5);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .site-header {
+    height: 70px;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .logo {
+    font-size: 18px;
+  }
+  
+  .nav {
+    display: none;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .mobile-nav.active {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header {
+    height: 60px;
+  }
+  
+  .logo {
+    font-size: 16px;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
 }
