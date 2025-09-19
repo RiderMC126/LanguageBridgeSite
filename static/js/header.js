@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 connectBtnMobile.querySelector("span").textContent = "Chat";
             }
 
-            // Добавляем кнопку Logout
+            // Добавляем кнопку Logout в десктопное меню
             if (!document.getElementById("logoutBtn")) {
                 const logout = document.createElement("a");
                 logout.id = "logoutBtn";
@@ -83,33 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     };
+
     updateHeader();
-
-    // =========================
-    // Селектор языка
-    // =========================
-    const languageSelector = document.getElementById("languageSelector");
-    const currentFlag = document.getElementById("currentFlag");
-    const languageDropdown = document.getElementById("languageDropdown");
-
-    languageSelector.addEventListener("click", () => {
-        languageDropdown.classList.toggle("hidden");
-    });
-
-    languageDropdown.querySelectorAll("li").forEach(li => {
-        li.addEventListener("click", () => {
-            const flag = li.textContent.split(" ")[0];
-            const lang = li.dataset.lang;
-            currentFlag.textContent = flag;
-            languageDropdown.classList.add("hidden");
-            localStorage.setItem("language", lang);
-            console.log("Selected language:", lang);
-        });
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!languageSelector.contains(e.target)) {
-            languageDropdown.classList.add("hidden");
-        }
-    });
 });
