@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, HTTPException, Depends, UploadFile, File, WebSocket
+from fastapi import FastAPI, Request, Form, HTTPException, Depends, UploadFile, File, WebSocket, WebSocketDisconnect
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
@@ -18,6 +18,7 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
+active_connections: dict[str, WebSocket] = {}
 
 
 # Startup event для инициализации базы данных
@@ -75,6 +76,150 @@ async def api_login(data: dict):
         return JSONResponse({"success": False, "message": "All fields are required!"})
     success, message = await authenticate_user(loginOrEmail, password)
     return JSONResponse({"success": success, "message": message})
+
+# Chat Page
+@app.get("/chat", response_class=HTMLResponse)
+async def chatPage(request: Request):
+    return templates.TemplateResponse(
+        "chat.html",
+        {"request": request,
+         "title": "Chat"
+         }
+    )
+
+# Получить пользователей по поиску
+@app.get("/api/users/search")
+async def search_users(q: str, current: str):
+    conn = await asyncpg.connect(
+        host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_NAME
+    )
+    rows = await conn.fetch("""
+        SELECT username FROM users
+        WHERE username ILIKE $1 AND username != $2
+        ORDER BY username ASC
+        LIMIT 10
+    """, f"%{q}%", current)
+    await conn.close()
+    return {"users": [r["username"] for r in rows]}
+
+# Получить пользователей с историей переписки
+@app.get("/api/users/history")
+async def users_with_history(current: str):
+    conn = await asyncpg.connect(
+        host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_NAME
+    )
+    rows = await conn.fetch("""
+        SELECT DISTINCT u.username
+        FROM users u
+        JOIN messages m ON u.id = m.sender_id OR u.id = m.receiver_id
+        WHERE u.username != $1 AND (m.sender_id = (SELECT id FROM users WHERE username=$1)
+        OR m.receiver_id = (SELECT id FROM users WHERE username=$1))
+    """, current)
+    await conn.close()
+    return {"users": [r["username"] for r in rows]}
+
+@app.post("/api/messages")
+async def send_message(data: dict):
+    sender = data.get("sender")
+    receiver = data.get("receiver")
+    content = data.get("content")
+    if not sender or not receiver or not content:
+        return JSONResponse({"success": False, "message": "Missing fields"})
+
+    conn = await asyncpg.connect(
+        host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_NAME
+    )
+    sender_id = await conn.fetchval("SELECT id FROM users WHERE username=$1", sender)
+    receiver_id = await conn.fetchval("SELECT id FROM users WHERE username=$1", receiver)
+    await conn.execute(
+        "INSERT INTO messages(sender_id, receiver_id, content) VALUES($1,$2,$3)",
+        sender_id, receiver_id, content
+    )
+    await conn.close()
+    return {"success": True}
+
+# Получить историю сообщений между двумя пользователями
+@app.get("/api/messages/history")
+async def messages_history(user1: str, user2: str):
+    conn = await asyncpg.connect(
+        host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_NAME
+    )
+    rows = await conn.fetch("""
+        SELECT u.username as sender, m.content, m.created_at
+        FROM messages m
+        JOIN users u ON m.sender_id = u.id
+        WHERE (m.sender_id = (SELECT id FROM users WHERE username=$1) 
+               AND m.receiver_id = (SELECT id FROM users WHERE username=$2))
+           OR (m.sender_id = (SELECT id FROM users WHERE username=$2) 
+               AND m.receiver_id = (SELECT id FROM users WHERE username=$1))
+        ORDER BY m.created_at ASC
+    """, user1, user2)
+    await conn.close()
+    return {"messages": [{"sender": r["sender"], "content": r["content"]} for r in rows]}
+
+
+@app.websocket("/ws/{username}")
+async def websocket_endpoint(websocket: WebSocket, username: str):
+    await websocket.accept()
+    active_connections[username] = websocket
+    try:
+        while True:
+            data = await websocket.receive_json()
+            receiver = data['receiver']
+            content = data['content']
+
+            # Сохраняем сообщение в БД
+            await save_message(username, receiver, content)
+
+            # Отправляем сообщение получателю, если он онлайн
+            if receiver in active_connections:
+                await active_connections[receiver].send_json({
+                    "sender": username,
+                    "content": content
+                })
+
+            # Отправляем обратно отправителю для подтверждения
+            await websocket.send_json({
+                "sender": username,
+                "content": content
+            })
+
+    except Exception as e:
+        print(f"{username} disconnected")
+    finally:
+        del active_connections[username]
+
+@app.websocket("/ws/chat/{username}")
+async def websocket_endpoint(websocket: WebSocket, username: str):
+    # Разрешаем соединение
+    await websocket.accept()
+    active_connections[username] = websocket
+    try:
+        while True:
+            data = await websocket.receive_json()
+            receiver = data.get("receiver")
+            content = data.get("content")
+            sender = data.get("sender")
+
+            # Сохраняем сообщение в БД
+            await save_message(sender, receiver, content)
+
+            # Отправляем сообщение получателю, если он онлайн
+            if receiver in active_connections:
+                await active_connections[receiver].send_json({
+                    "sender": sender,
+                    "content": content
+                })
+            # Отправляем обратно отправителю, чтобы обновился чат
+            if sender in active_connections:
+                await active_connections[sender].send_json({
+                    "sender": sender,
+                    "content": content
+                })
+
+    except WebSocketDisconnect:
+        # Удаляем соединение при отключении
+        active_connections.pop(username, None)
 
 
 

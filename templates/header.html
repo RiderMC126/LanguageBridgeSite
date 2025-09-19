@@ -2,19 +2,30 @@
     <div class="container">
         <div class="logo"><a href="/">LanguageBridge</a></div>
 
-        <!-- Обычное меню для десктопа -->
+        <!-- Десктоп меню -->
         <nav class="nav" id="mainNav">
             <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Home</a>
+
+            <!-- Селектор языка -->
+            <div class="language-selector" id="languageSelector">
+                <span id="currentFlag">🇺🇸</span>
+                <ul id="languageDropdown" class="hidden">
+                    <li data-lang="en">🇺🇸 English</li>
+                    <li data-lang="es">🇪🇸 Español</li>
+                    <li data-lang="fr">🇫🇷 Français</li>
+                    <li data-lang="de">🇩🇪 Deutsch</li>
+                </ul>
+            </div>
+
             <a href="/about" class="{% if request.url.path.startswith('/about') %}active{% endif %}">About</a>
             <a href="/connect" id="connectBtn" class="btn-gradient">
                 <span class="gradient-text">Connect</span>
             </a>
+            <span id="logoutContainer"></span>
         </nav>
 
         <!-- Кнопка мобильного меню -->
-        <button class="mobile-menu-toggle" id="mobileMenuToggle">
-            ☰
-        </button>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
     </div>
 
     <!-- Мобильное меню -->
@@ -24,5 +35,6 @@
         <a href="/connect" id="connectBtnMobile" class="btn-gradient">
             <span class="gradient-text">Connect</span>
         </a>
+        <span id="logoutContainerMobile"></span>
     </nav>
 </header>

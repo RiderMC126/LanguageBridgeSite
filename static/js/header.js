@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
             mobileMenuToggle.innerHTML = mobileNav.classList.contains('active') ? '✕' : '☰';
         });
 
-        // Закрываем меню при клике на ссылку
         document.querySelectorAll('.mobile-nav a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileNav.classList.remove('active');
@@ -29,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Закрываем меню при клике вне его
         document.addEventListener('click', (e) => {
             if (!mobileMenuToggle.contains(e.target) && !mobileNav.contains(e.target)) {
                 mobileNav.classList.remove('active');
@@ -37,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Закрываем меню при изменении размера экрана
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 mobileNav.classList.remove('active');
@@ -51,6 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     const connectBtn = document.getElementById("connectBtn");
     const connectBtnMobile = document.getElementById("connectBtnMobile");
+    const logoutContainer = document.getElementById("logoutContainer");
+    const logoutContainerMobile = document.getElementById("logoutContainerMobile");
 
     const updateHeader = () => {
         const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -66,13 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 connectBtnMobile.querySelector("span").textContent = "Chat";
             }
 
-            // Добавляем кнопку Logout, если ее нет
+            // Добавляем кнопку Logout
             if (!document.getElementById("logoutBtn")) {
                 const logout = document.createElement("a");
                 logout.id = "logoutBtn";
                 logout.href = "#";
                 logout.textContent = "Logout";
-                logout.style.marginLeft = "10px";
                 logout.style.color = "#fff";
                 logout.style.fontWeight = "bold";
                 logout.addEventListener("click", () => {
@@ -80,20 +78,38 @@ document.addEventListener("DOMContentLoaded", () => {
                     location.reload();
                 });
 
-                // Добавляем в десктопное меню в конец
-                if (connectBtn && connectBtn.parentNode) {
-                    connectBtn.parentNode.appendChild(logout);
-                }
-
-                // Для мобильного меню
-                if (connectBtnMobile && connectBtnMobile.parentNode) {
-                    const mobileLogout = logout.cloneNode(true);
-                    mobileLogout.id = "logoutBtnMobile";
-                    connectBtnMobile.parentNode.appendChild(mobileLogout);
-                }
+                logoutContainer.appendChild(logout);
+                if (logoutContainerMobile) logoutContainerMobile.appendChild(logout.cloneNode(true));
             }
         }
     };
-
     updateHeader();
+
+    // =========================
+    // Селектор языка
+    // =========================
+    const languageSelector = document.getElementById("languageSelector");
+    const currentFlag = document.getElementById("currentFlag");
+    const languageDropdown = document.getElementById("languageDropdown");
+
+    languageSelector.addEventListener("click", () => {
+        languageDropdown.classList.toggle("hidden");
+    });
+
+    languageDropdown.querySelectorAll("li").forEach(li => {
+        li.addEventListener("click", () => {
+            const flag = li.textContent.split(" ")[0];
+            const lang = li.dataset.lang;
+            currentFlag.textContent = flag;
+            languageDropdown.classList.add("hidden");
+            localStorage.setItem("language", lang);
+            console.log("Selected language:", lang);
+        });
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!languageSelector.contains(e.target)) {
+            languageDropdown.classList.add("hidden");
+        }
+    });
 });

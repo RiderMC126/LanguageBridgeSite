@@ -131,6 +131,42 @@
   box-shadow: 0 0 10px rgba(99,102,241,0.5);
 }
 
+.language-selector {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    margin-left: 15px;
+    font-size: 18px;
+}
+
+.language-selector ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #222;
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+    border-radius: 5px;
+    min-width: 120px;
+    z-index: 100;
+}
+
+.language-selector ul li {
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.language-selector ul li:hover {
+    background: #555;
+}
+
+.hidden {
+    display: none;
+}
+
+
 /* Адаптивность */
 @media (max-width: 768px) {
   .site-header {

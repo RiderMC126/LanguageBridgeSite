@@ -42,8 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', () => {
             const input = btn.previousElementSibling;
-            input.type = input.type === 'password' ? 'text' : 'password';
-            btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+            if(input.type === 'password'){
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
         });
     });
 
@@ -51,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isPasswordValid = password => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
     const isLatinUsername = username => /^[A-Za-z0-9]{3,}$/.test(username);
 
-    // ===== Register =====
+    // Register form
     registerForm.addEventListener('submit', async e => {
         e.preventDefault();
         const username = document.getElementById('registerUsername').value.trim();
@@ -91,13 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await response.json();
             if(data.success){
-                // Сохраняем факт входа
                 localStorage.setItem("isLoggedIn", "true");
-                registerMessage.style.color = 'green';
-                registerMessage.textContent = data.message;
-                registerForm.reset();
-                // Перезагружаем страницу, чтобы обновился header
-                location.reload();
+                localStorage.setItem("username", username); // сохраняем username
+                window.location.href = "/"; // редирект на главную
             } else {
                 registerMessage.textContent = data.message;
             }
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ===== Login =====
+    // Login form
     loginForm.addEventListener('submit', async e => {
         e.preventDefault();
         const loginOrEmail = document.getElementById('loginEmail').value.trim();
@@ -145,13 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await response.json();
             if(data.success){
-                // Сохраняем факт входа
                 localStorage.setItem("isLoggedIn", "true");
-                loginMessage.style.color = 'green';
-                loginMessage.textContent = data.message;
-                loginForm.reset();
-                // Перезагружаем страницу, чтобы обновился header
-                location.reload();
+                localStorage.setItem("username", loginOrEmail); // сохраняем username или email
+                window.location.href = "/"; // редирект на главную
             } else {
                 loginMessage.textContent = data.message;
             }
