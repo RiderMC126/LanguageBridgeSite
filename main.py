@@ -28,6 +28,16 @@ async def mainPage(request: Request):
          "title": "MainPage"}
     )
 
+# About Page
+@app.get("/about", response_class=HTTPException)
+async def aboutPage(request: Request):
+    return templates.TemplateResponse(
+        "about.html",
+        {"request": request,
+         "title": "About"
+         }
+    )
+
 
 # Start application
 if __name__ == "__main__":
