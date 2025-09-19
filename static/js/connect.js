@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
 
-    // Создаем блоки для сообщений под формами
     const createMessageDiv = (form) => {
         let msgDiv = form.querySelector('.form-message');
         if (!msgDiv) {
@@ -43,97 +42,121 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', () => {
             const input = btn.previousElementSibling;
-            if(input.type === 'password'){
-                input.type = 'text';
-                btn.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                btn.textContent = '👁️';
-            }
+            input.type = input.type === 'password' ? 'text' : 'password';
+            btn.textContent = input.type === 'password' ? '👁️' : '🙈';
         });
     });
 
-    // Helper functions for validation
-    const isEmailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isEmailValid = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isPasswordValid = password => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
+    const isLatinUsername = username => /^[A-Za-z0-9]{3,}$/.test(username);
 
-    const isPasswordValid = (password) => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
-
-    const isLatinUsername = (username) => /^[A-Za-z0-9]{3,}$/.test(username);
-
-    // Register form validation
-    registerForm.addEventListener('submit', e => {
+    // ===== Register =====
+    registerForm.addEventListener('submit', async e => {
         e.preventDefault();
-
         const username = document.getElementById('registerUsername').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
         const password = document.getElementById('registerPassword').value;
         const confirm = document.getElementById('confirmPassword').value;
 
         registerMessage.style.color = 'red';
+        registerMessage.textContent = '';
 
-        if (!username || !email || !password || !confirm) {
+        if(!username || !email || !password || !confirm){
             registerMessage.textContent = "All fields are required!";
             return;
         }
-
-        if (!isLatinUsername(username)) {
+        if(!isLatinUsername(username)){
             registerMessage.textContent = "Username must be at least 3 characters and contain only English letters and numbers!";
             return;
         }
-
-        if (!isEmailValid(email)) {
+        if(!isEmailValid(email)){
             registerMessage.textContent = "Please enter a valid email address!";
             return;
         }
-
-        if (!isPasswordValid(password)) {
+        if(!isPasswordValid(password)){
             registerMessage.textContent = "Password must be at least 8 characters long and include letters and numbers!";
             return;
         }
-
-        if (password !== confirm) {
+        if(password !== confirm){
             registerMessage.textContent = "Passwords do not match!";
             return;
         }
 
-        registerMessage.style.color = 'green';
-        registerMessage.textContent = "Registered successfully!";
-        registerForm.reset();
+        try {
+            const response = await fetch("/api/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password })
+            });
+            const data = await response.json();
+            if(data.success){
+                // Сохраняем факт входа
+                localStorage.setItem("isLoggedIn", "true");
+                registerMessage.style.color = 'green';
+                registerMessage.textContent = data.message;
+                registerForm.reset();
+                // Перезагружаем страницу, чтобы обновился header
+                location.reload();
+            } else {
+                registerMessage.textContent = data.message;
+            }
+        } catch (err){
+            registerMessage.textContent = "Server error. Try again later.";
+        }
     });
 
-    // Login form validation
-    loginForm.addEventListener('submit', e => {
+    // ===== Login =====
+    loginForm.addEventListener('submit', async e => {
         e.preventDefault();
-
         const loginOrEmail = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
 
         loginMessage.style.color = 'red';
+        loginMessage.textContent = '';
 
-        if (!loginOrEmail || !password) {
+        if(!loginOrEmail || !password){
             loginMessage.textContent = "All fields are required!";
             return;
         }
 
-        if (loginOrEmail.includes('@')) {
-            if (!isEmailValid(loginOrEmail)) {
+        if(loginOrEmail.includes('@')){
+            if(!isEmailValid(loginOrEmail)){
                 loginMessage.textContent = "Please enter a valid email address!";
                 return;
             }
         } else {
-            if (!isLatinUsername(loginOrEmail)) {
+            if(!isLatinUsername(loginOrEmail)){
                 loginMessage.textContent = "Login must be at least 3 characters and contain only English letters and numbers!";
                 return;
             }
         }
 
-        if (!isPasswordValid(password)) {
+        if(!isPasswordValid(password)){
             loginMessage.textContent = "Password must be at least 8 characters long and include letters and numbers!";
             return;
         }
 
-        loginMessage.style.color = 'green';
-        loginMessage.textContent = "Logged in successfully!";
-        loginForm.reset();
+        try {
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ loginOrEmail, password })
+            });
+            const data = await response.json();
+            if(data.success){
+                // Сохраняем факт входа
+                localStorage.setItem("isLoggedIn", "true");
+                loginMessage.style.color = 'green';
+                loginMessage.textContent = data.message;
+                loginForm.reset();
+                // Перезагружаем страницу, чтобы обновился header
+                location.reload();
+            } else {
+                loginMessage.textContent = data.message;
+            }
+        } catch (err){
+            loginMessage.textContent = "Server error. Try again later.";
+        }
     });
 });

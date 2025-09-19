@@ -55,6 +55,28 @@ async def connectPage(request: Request):
          }
     )
 
+# API для регистрации
+@app.post("/api/register")
+async def api_register(data: dict):
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+    if not username or not email or not password:
+        return JSONResponse({"success": False, "message": "All fields are required!"})
+    success, message = await register_user(username, email, password)
+    return JSONResponse({"success": success, "message": message})
+
+# API для логина
+@app.post("/api/login")
+async def api_login(data: dict):
+    loginOrEmail = data.get("loginOrEmail")
+    password = data.get("password")
+    if not loginOrEmail or not password:
+        return JSONResponse({"success": False, "message": "All fields are required!"})
+    success, message = await authenticate_user(loginOrEmail, password)
+    return JSONResponse({"success": success, "message": message})
+
+
 
 # Start application
 if __name__ == "__main__":

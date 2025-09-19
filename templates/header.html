@@ -1,27 +1,27 @@
 <header class="site-header">
     <div class="container">
         <div class="logo"><a href="/">LanguageBridge</a></div>
-        
+
         <!-- Обычное меню для десктопа -->
-        <nav class="nav">
+        <nav class="nav" id="mainNav">
             <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Home</a>
             <a href="/about" class="{% if request.url.path.startswith('/about') %}active{% endif %}">About</a>
-            <a href="/connect" class="btn-gradient">
+            <a href="/connect" id="connectBtn" class="btn-gradient">
                 <span class="gradient-text">Connect</span>
             </a>
         </nav>
-        
+
         <!-- Кнопка мобильного меню -->
         <button class="mobile-menu-toggle" id="mobileMenuToggle">
             ☰
         </button>
     </div>
-    
+
     <!-- Мобильное меню -->
     <nav class="mobile-nav" id="mobileNav">
         <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Home</a>
         <a href="/about" class="{% if request.url.path.startswith('/about') %}active{% endif %}">About</a>
-        <a href="/connect" class="btn-gradient">
+        <a href="/connect" id="connectBtnMobile" class="btn-gradient">
             <span class="gradient-text">Connect</span>
         </a>
     </nav>
