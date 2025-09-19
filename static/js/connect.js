@@ -76,7 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     optionsList.querySelectorAll('li').forEach(option => {
-        option.addEventListener('click', () => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation(); // предотвращаем закрытие сразу родителем
             const value = option.getAttribute('data-value');
             const text = option.textContent;
             selectedLanguage.textContent = text;
@@ -139,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem("isLoggedIn", "true");
                 localStorage.setItem("username", username);
                 localStorage.setItem("language", language);
-                window.location.href = "/"; 
+                window.location.href = "/";
             } else {
                 registerMessage.textContent = data.message;
             }
@@ -191,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(data.success){
                 localStorage.setItem("isLoggedIn", "true");
                 localStorage.setItem("username", loginOrEmail);
-                window.location.href = "/"; 
+                window.location.href = "/";
             } else {
                 loginMessage.textContent = data.message;
             }
@@ -199,5 +200,4 @@ document.addEventListener('DOMContentLoaded', () => {
             loginMessage.textContent = "Server error. Try again later.";
         }
     });
-
 });

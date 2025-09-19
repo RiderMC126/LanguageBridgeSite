@@ -62,10 +62,12 @@ async def api_register(data: dict):
     username = data.get("username")
     email = data.get("email")
     password = data.get("password")
+    language = data.get("language", "en")  # <-- вот здесь берём язык из запроса
     if not username or not email or not password:
         return JSONResponse({"success": False, "message": "All fields are required!"})
-    success, message = await register_user(username, email, password)
+    success, message = await register_user(username, email, password, language)
     return JSONResponse({"success": success, "message": message})
+
 
 # API для логина
 @app.post("/api/login")
