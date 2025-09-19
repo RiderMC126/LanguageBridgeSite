@@ -23,6 +23,7 @@ async def init_db():
                 username VARCHAR(50) UNIQUE NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
+                language VARCHAR(10) DEFAULT 'en',  -- Новое поле
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -58,25 +59,17 @@ async def hash_password(password: str) -> str:
 # =========================
 # Регистрация пользователя
 # =========================
-async def register_user(username: str, email: str, password: str):
-    """
-    Добавление нового пользователя в базу.
-    Возвращает tuple (success: bool, message: str)
-    """
+async def register_user(username: str, email: str, password: str, language: str = "en"):
     try:
         conn = await asyncpg.connect(
-            host=DB_HOST,
-            port=DB_PORT,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME
+            host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_NAME
         )
 
         hashed = await hash_password(password)
         await conn.execute("""
-            INSERT INTO users(username, email, password)
-            VALUES($1, $2, $3)
-        """, username, email, hashed)
+            INSERT INTO users(username, email, password, language)
+            VALUES($1, $2, $3, $4)
+        """, username, email, hashed, language)
 
         await conn.close()
         return True, "User registered successfully"
@@ -85,6 +78,7 @@ async def register_user(username: str, email: str, password: str):
         return False, "Username or email already exists"
     except Exception as e:
         return False, f"Database error: {e}"
+
 
 
 # =========================

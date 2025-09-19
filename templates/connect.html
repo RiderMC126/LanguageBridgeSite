@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/header.css">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/connect.css">
@@ -59,6 +58,25 @@
                         <button type="button" class="toggle-password">👁️</button>
                     </div>
                 </div>
+
+                <!-- Language Select -->
+                <div class="form-group">
+                    <label for="registerLanguage">Language</label>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select" id="languageSelect">
+                            <span id="selectedLanguage" data-value="en">🇺🇸 English</span>
+                            <ul class="options hidden">
+                                <li data-value="en">🇺🇸 English</li>
+                                <li data-value="ru">🇷🇺 Русский</li>
+                                <li data-value="es">🇪🇸 Español</li>
+                                <li data-value="fr">🇫🇷 Français</li>
+                                <li data-value="de">🇩🇪 Deutsch</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <input type="hidden" id="registerLanguage" value="en">
+                </div>
+
                 <button type="submit" class="auth-button">Register</button>
             </form>
         </div>

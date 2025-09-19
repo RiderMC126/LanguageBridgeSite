@@ -19,7 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginMessage = createMessageDiv(loginForm);
     const registerMessage = createMessageDiv(registerForm);
 
+    // =========================
     // Switch tabs
+    // =========================
     loginTab.addEventListener('click', () => {
         loginTab.classList.add('active');
         registerTab.classList.remove('active');
@@ -38,7 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         registerMessage.textContent = '';
     });
 
+    // =========================
     // Toggle password visibility
+    // =========================
     document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', () => {
             const input = btn.previousElementSibling;
@@ -52,17 +56,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // =========================
+    // Validation
+    // =========================
     const isEmailValid = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isPasswordValid = password => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
     const isLatinUsername = username => /^[A-Za-z0-9]{3,}$/.test(username);
 
-    // Register form
+    // =========================
+    // Custom language select
+    // =========================
+    const languageSelect = document.getElementById('languageSelect');
+    const selectedLanguage = document.getElementById('selectedLanguage');
+    const languageInput = document.getElementById('registerLanguage');
+    const optionsList = languageSelect.querySelector('.options');
+
+    languageSelect.addEventListener('click', (e) => {
+        optionsList.classList.toggle('hidden');
+    });
+
+    optionsList.querySelectorAll('li').forEach(option => {
+        option.addEventListener('click', () => {
+            const value = option.getAttribute('data-value');
+            const text = option.textContent;
+            selectedLanguage.textContent = text;
+            languageInput.value = value;
+
+            // Сразу закрываем список после выбора
+            optionsList.classList.add('hidden');
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!languageSelect.contains(e.target)) {
+            optionsList.classList.add('hidden');
+        }
+    });
+
+    // =========================
+    // Register form submit
+    // =========================
     registerForm.addEventListener('submit', async e => {
         e.preventDefault();
         const username = document.getElementById('registerUsername').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
         const password = document.getElementById('registerPassword').value;
         const confirm = document.getElementById('confirmPassword').value;
+        const language = languageInput.value;
 
         registerMessage.style.color = 'red';
         registerMessage.textContent = '';
@@ -92,13 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password })
+                body: JSON.stringify({ username, email, password, language })
             });
             const data = await response.json();
             if(data.success){
                 localStorage.setItem("isLoggedIn", "true");
-                localStorage.setItem("username", username); // сохраняем username
-                window.location.href = "/"; // редирект на главную
+                localStorage.setItem("username", username);
+                localStorage.setItem("language", language);
+                window.location.href = "/"; 
             } else {
                 registerMessage.textContent = data.message;
             }
@@ -107,7 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Login form
+    // =========================
+    // Login form submit
+    // =========================
     loginForm.addEventListener('submit', async e => {
         e.preventDefault();
         const loginOrEmail = document.getElementById('loginEmail').value.trim();
@@ -147,8 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if(data.success){
                 localStorage.setItem("isLoggedIn", "true");
-                localStorage.setItem("username", loginOrEmail); // сохраняем username или email
-                window.location.href = "/"; // редирект на главную
+                localStorage.setItem("username", loginOrEmail);
+                window.location.href = "/"; 
             } else {
                 loginMessage.textContent = data.message;
             }
@@ -156,4 +199,5 @@ document.addEventListener('DOMContentLoaded', () => {
             loginMessage.textContent = "Server error. Try again later.";
         }
     });
+
 });
