@@ -193,26 +193,46 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
 
 @app.websocket("/ws/chat/{username}")
 async def websocket_endpoint(websocket: WebSocket, username: str):
-    # Разрешаем соединение
     await websocket.accept()
     active_connections[username] = websocket
     try:
         while True:
             data = await websocket.receive_json()
+            sender = data.get("sender")
             receiver = data.get("receiver")
             content = data.get("content")
-            sender = data.get("sender")
+            if not sender or not receiver or not content:
+                continue
 
-            # Сохраняем сообщение в БД
+            # Сохраняем оригинальное сообщение в БД
             await save_message(sender, receiver, content)
 
-            # Отправляем сообщение получателю, если он онлайн
+            # Получаем язык получателя
+            conn = await asyncpg.connect(
+                host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_NAME
+            )
+            receiver_lang = await conn.fetchval(
+                "SELECT language FROM users WHERE username=$1", receiver
+            )
+            sender_lang = await conn.fetchval(
+                "SELECT language FROM users WHERE username=$1", sender
+            )
+            await conn.close()
+
+            # Переводим только если язык получателя отличается от оригинала
+            if receiver_lang != sender_lang:
+                translated_content = await translate_text(content, receiver_lang)
+            else:
+                translated_content = content
+
+            # Отправляем получателю перевод
             if receiver in active_connections:
                 await active_connections[receiver].send_json({
                     "sender": sender,
-                    "content": content
+                    "content": translated_content
                 })
-            # Отправляем обратно отправителю, чтобы обновился чат
+
+            # Отправляем отправителю оригинал
             if sender in active_connections:
                 await active_connections[sender].send_json({
                     "sender": sender,
@@ -220,8 +240,11 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
                 })
 
     except WebSocketDisconnect:
-        # Удаляем соединение при отключении
         active_connections.pop(username, None)
+    except Exception as e:
+        print(f"{username} disconnected: {e}")
+        active_connections.pop(username, None)
+
 
 
 

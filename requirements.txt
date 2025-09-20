@@ -5,3 +5,5 @@ logging==0.4.9.6
 asyncpg==0.30.0
 asyncio==4.0.0
 websockets==15.0.1
+deep-translator==1.11.4
+legacy-cgi==2.6.3
