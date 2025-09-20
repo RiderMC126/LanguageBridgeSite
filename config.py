@@ -1,10 +1,10 @@
 # SERVER
-HOST = "127.0.0.1"
-PORT = 3000
+HOST = ""
+PORT = 
 
 # DATABASE
-DB_HOST = "127.0.0.1"
-DB_PORT = 5432
-DB_NAME = "db"
-DB_USER = "postgres"
-DB_PASSWORD = "Marik22899"
+DB_HOST = ""
+DB_PORT = 
+DB_NAME = ""
+DB_USER = ""
+DB_PASSWORD = ""
