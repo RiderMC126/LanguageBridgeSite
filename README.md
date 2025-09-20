@@ -27,13 +27,30 @@
 
 ---
 
-## 🏗 Структура проекта
-LanguageBridgeSite/
-│
-├── main.py # Основные маршруты и WebSocket
-├── db.py # Работа с базой данных
-├── utils.py # Перевод и вспомогательные функции
-├── templates/ # HTML-шаблоны
-├── static/ # CSS, JS
-├── config.py # Настройки проекта
-├── requirements.txt # Зависимости
+## 🚀 Установка
+
+1. Клонировать репозиторий:
+   ```bash
+   git clone https://github.com/RiderMC126/LanguageBridgeSite.git
+   cd LanguageBridgeSite
+   ```
+2. Создать и активировать виртуальное окружение:
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate     # Windows
+   source venv/bin/activate  # Linux / macOS
+   ```
+  
+3. Установить зависимости:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Настроить "config.py".
+5. Запустить сервер:
+   ```bash
+   uvicorn main:app --host 0.0.0.0 --port 8000
+   ```
+   
+
+
+   
